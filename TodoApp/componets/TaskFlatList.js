@@ -10,7 +10,9 @@ import {
   View,
 } from 'react-native';
 
-export default class TaskFlatList extends Component {
+import {connect} from 'react-redux';
+
+class TaskFlatList extends Component {
   renderItem = ({item, index}) => {
     const {onFinishedItem, onDeleteItem} = this.props;
 
@@ -38,9 +40,11 @@ export default class TaskFlatList extends Component {
   };
 
   render() {
+    const {data} = this.props.listData;
+
     return (
       <FlatList
-        data={this.props.listData}
+        data={data}
         extraData={this.props}
         keyExtractor={(item, index) => index}
         renderItem={this.renderItem}></FlatList>
@@ -65,3 +69,33 @@ const style = StyleSheet.create({
     elevation: 2,
   },
 });
+
+// Action
+
+const finishTaskAction = (index) => {
+  return {
+    type: 'FINISH',
+    atIndex: index,
+  };
+};
+
+const deleteTaskAction = (index) => {
+  return {
+    type: 'DELETE',
+    atIndex: index,
+  };
+};
+
+export default connect(
+  (state) => {
+    return {
+      listData: state,
+    };
+  },
+  (dispatch) => {
+    return {
+      onFinishedItem: (index) => dispatch(finishTaskAction(index)),
+      onDeleteItem: (index) => dispatch(deleteTaskAction(index)),
+    };
+  },
+)(TaskFlatList);

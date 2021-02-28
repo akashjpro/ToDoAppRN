@@ -10,18 +10,16 @@ import {
   View,
 } from 'react-native';
 
-export default class AddView extends Component {
+import {connect} from 'react-redux';
+class AddView extends Component {
   constructor(props) {
     super(props);
     this.state = {newTaskName: ''};
   }
 
-  onAddNewTask = () => {
-    this.props.onAddNewTask(this.state.newTaskName);
-    this.setState({newTaskName: ''});
-  };
-
   render() {
+    const onAddNewTask = this.props.onAddNewTask;
+
     return (
       <View style={styles.addView}>
         <Text style={{fontSize: 18, marginBottom: 10}}>To Do App</Text>
@@ -31,13 +29,15 @@ export default class AddView extends Component {
               returnKeyType="done"
               underlineColorAndroid="transparent"
               value={`${this.state.newTaskName}`}
-              onSubmitEditing={this.onAddNewTask}
+              onSubmitEditing={() => onAddNewTask(this.state.newTaskName)}
               onChangeText={(text) => this.setState({newTaskName: text})}
               placeholder="Task name"
               style={[{flex: 1}, styles.input]}></TextInput>
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={this.onAddNewTask}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => onAddNewTask(this.state.newTaskName)}>
             <Text style={{color: 'white'}}>Add</Text>
           </TouchableOpacity>
         </View>
@@ -83,3 +83,21 @@ const styles = StyleSheet.create({
     padding: 7,
   },
 });
+
+const addTask = (name) => {
+  return {
+    type: 'ADD',
+    taskName: name,
+  };
+};
+
+export default connect(
+  (state) => {
+    return {};
+  },
+  (dispatch) => {
+    return {
+      onAddNewTask: (name) => dispatch(addTask(name)),
+    };
+  },
+)(AddView);
